@@ -32,18 +32,20 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'shop',
+    'corsheaders', 
+    'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework.authtoken',
     'django_filters',  # AJOUTÉ pour les filtres avancés
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,6 +54,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+CORS_ALLOWED_ORIGINS = [
+     "http://localhost:56392",
+    "http://127.0.0.1:56392",
+    "http://localhost:52153", 
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:53589",
+    "http://127.0.0.1:9000",
+]
+CORS_ALLOW_ALL_ORIGINS = True  # Pour le développement seulement
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'my_site.urls'
 
@@ -150,6 +163,12 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',  # Pour l'interface web
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSIONS_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 
 MEDIA_URL = '/media/'

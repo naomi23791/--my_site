@@ -20,3 +20,26 @@ class LanguageApiTest(TestCase):
         response = self.client.post(reverse('language-list'), self.language_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['name'], "Spanish")
+
+
+class AuthApiTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_register_and_login(self):
+        register_data = {"username": "testuser", "email": "u@example.com", "password": "password123"}
+        # Register
+        resp = self.client.post(reverse('register'), register_data, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertIn('token', resp.data)
+
+        # Login
+        login_data = {"username": "testuser", "password": "password123"}
+        resp2 = self.client.post(reverse('login'), login_data, format='json')
+        self.assertEqual(resp2.status_code, status.HTTP_200_OK)
+        self.assertIn('token', resp2.data)
+
+    def test_daily_challenge_requires_auth(self):
+        # Unauthenticated should return 401
+        resp = self.client.get(reverse('daily-challenge'))
+        self.assertIn(resp.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))

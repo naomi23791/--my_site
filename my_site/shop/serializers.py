@@ -1,5 +1,12 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from .models import Language, Game, UserProfile, Challenge, Reward, UserChallengeProgress, UserGameSession
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
 
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,6 +27,44 @@ class GameSerializer(serializers.ModelSerializer):
 #             'id', 'user', 'username', 'email', 'total_points', 'current_streak', 'avatar', 'languages_learning',
 #         ]
 #         read_only_fields = ['user']
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],  # Ajoutez le nom du paramètre
+            email=validated_data['email'],
+            password=validated_data['password']
+    )
+        return user
+
+
+# Login Serializer - Accepte username ou email
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.CharField(required=False, allow_blank=True)
+    password = serializers.CharField()
+
+    def validate(self, data):
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        
+        user = None
+        
+        # Essayer de trouver l'utilisateur par username ou email
+        if username:
+            user = User.objects.filter(username=username).first()
+        elif email:
+            user = User.objects.filter(email=email).first()
+        
+        if user and user.check_password(password) and user.is_active:
+            return user
+        
+        raise serializers.ValidationError("Identifiants incorrects ou compte désactivé")
 
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)

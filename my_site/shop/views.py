@@ -14,6 +14,13 @@ from .serializers import (
     UserProfileSerializer, RewardSerializer, UserChallengeProgressSerializer,
     UserGameSessionSerializer
 )
+from rest_framework import generics, permissions, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from django.contrib.auth.models import User
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
+from rest_framework.authtoken.models import Token
+
 
 
 # Complete ViewSets for CRUD operations
@@ -50,6 +57,38 @@ class GameViewSet(viewsets.ModelViewSet):
             "message": f"Game {game.title} started",
             "game_id": game.id
         })
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            "user": UserSerializer(user).data,
+            "token": token.key,
+            "message": "Utilisateur créé avec succès"
+        }, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.validated_data
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            "user": UserSerializer(user).data,
+            "token": token.key,
+            "message": "Connexion réussie"
+        })
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_user_profile(request):
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)   
 
 
 class ChallengeViewSet(viewsets.ModelViewSet):
@@ -60,6 +99,46 @@ class ChallengeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
     filterset_fields = ['is_daily', 'language']
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def game_questions(request, pk):
+    """Return a small set of sample quiz questions for a given game id.
+    This is a lightweight endpoint to support the frontend quiz prototype.
+    """
+    # In a real implementation, questions would come from the database.
+    sample_questions = [
+        {
+            'id': 1,
+            'game_id': int(pk),
+            'question': 'Comment dit-on "apple" en français ?',
+            'options': ['pomme', 'banane', 'orange', 'poire'],
+            'correct_answer': 'pomme',
+            'explanation': '"Apple" se traduit par "pomme".',
+            'order': 1,
+        },
+        {
+            'id': 2,
+            'game_id': int(pk),
+            'question': 'Quelle est la traduction de "hello" ?',
+            'options': ['bonjour', 'au revoir', 'salut', 'merci'],
+            'correct_answer': 'bonjour',
+            'explanation': '"Hello" se traduit généralement par "bonjour".',
+            'order': 2,
+        },
+        {
+            'id': 3,
+            'game_id': int(pk),
+            'question': 'Complétez: "Je ____ une pomme."',
+            'options': ['mange', 'manges', 'mangent', 'manger'],
+            'correct_answer': 'mange',
+            'explanation': 'La forme correcte est "Je mange".',
+            'order': 3,
+        },
+    ]
+
+    return Response(sample_questions)
     ordering_fields = ['title', 'points_reward', 'start_date']
     ordering = ['-start_date']
 

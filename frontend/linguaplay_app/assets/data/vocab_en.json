@@ -1,0 +1,30 @@
+{
+  "languages": {
+    "en": {
+      "categories": {
+        "Basics": [
+          { "word": "Hello", "translation": "Bonjour", "example": "Hello, how are you?" },
+          { "word": "Goodbye", "translation": "Au revoir", "example": "Goodbye! See you soon." },
+          { "word": "Please", "translation": "S'il vous plaît", "example": "Please pass the salt." },
+          { "word": "Thank you", "translation": "Merci", "example": "Thank you for your help." },
+          { "word": "Yes", "translation": "Oui", "example": "Yes, I would like that." }
+        ],
+        "Food": [
+          { "word": "Apple", "translation": "Pomme", "example": "The apple is red." },
+          { "word": "Bread", "translation": "Pain", "example": "I eat bread every morning." },
+          { "word": "Water", "translation": "Eau", "example": "Can I have some water?" },
+          { "word": "Tea", "translation": "Thé", "example": "She drinks tea after lunch." },
+          { "word": "Rice", "translation": "Riz", "example": "Rice is a common dish." }
+        ],
+        "Travel": [
+          { "word": "Airport", "translation": "Aéroport", "example": "The airport is busy." },
+          { "word": "Ticket", "translation": "Billet", "example": "I bought a ticket to Paris." },
+          { "word": "Hotel", "translation": "Hôtel", "example": "Our hotel has a pool." },
+          { "word": "Bus", "translation": "Bus", "example": "The bus arrives at 9 AM." },
+          { "word": "Passport", "translation": "Passeport", "example": "Don't forget your passport!" }
+        ]
+      }
+    }
+  }
+}
+

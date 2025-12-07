@@ -2,6 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+from .views import register, login, get_user_profile
 
 router = DefaultRouter()
 router.register(r'languages', views.LanguageViewSet)
@@ -12,6 +13,10 @@ router.register(r'profiles', views.UserProfileViewSet, basename='profile')
 
 urlpatterns = [
     path('', include(router.urls)),
+    
+    path('auth/register/', views.register, name='register'),
+    path('auth/login/', views.login, name='login'),
+    path('auth/profile/', views.get_user_profile, name='profile'),
     
     # Avatar management
     path('avatars/', views.available_avatars, name='available-avatars'),
@@ -25,4 +30,5 @@ urlpatterns = [
     
     # Profile initialization
     path('initialize-profile/', views.initialize_profile, name='initialize-profile'),
+        path('games/<int:pk>/questions/', views.game_questions, name='game-questions'),
 ]

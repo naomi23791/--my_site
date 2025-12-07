@@ -460,3 +460,8 @@ Le backend Django REST Framework fournit une API REST complète et sécurisée p
 - Authentification et permissions robustes
 - Performance optimisée (index, pagination, filtres)
 
+
+
+
+
+
